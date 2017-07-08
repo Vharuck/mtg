@@ -1,9 +1,5 @@
-# Build the database of sets and cards -----------------------------------------
+# Download card data and make data.tables --------------------------------------
 # All data is taken from mtgjson.com
-library(jsonlite)
-library(data.table)
-
-
 download_mtg_data <- function(save_dir) {
     mtgjson_url    <- 'https://mtgjson.com'
     sets_json_url  <- file.path(mtgjson_url, 'json/AllSets-x.json.zip')
