@@ -131,6 +131,14 @@ column_defs <- fread(
   cards, releaseDate,   Date,      FALSE
   cards, starter,       logical,   FALSE
   cards, mciNumber,     character, FALSE
+  sets,  name,          character, FALSE
+  sets,  code,          character, FALSE
+  sets,  releaseDate,   Date,      FALSE
+  sets,  border,        character, FALSE
+  sets,  type,          character, FALSE
+  sets,  block,         character, FALSE
+  sets,  onlineOnly,    logical,   FALSE
+  sets,  booster,       character, TRUE
   '
 )
 
@@ -143,7 +151,50 @@ create_cards_table <- function(all_sets_, cards_column_defs_) {
 }
 
 
+count_booster_cards <- function(booster_, rarity) {
+  # 1 for every "guarantee", fraction for a choice. Might want to adjust to
+  # reflect actual probability, e.g. for mythic rare vs rare
+  match_amount <- vapply(
+    booster_,
+    function(x) {
+      matches <- grep(paste0('\\b', rarity, '\\b'), x, ignore.case = TRUE)
+      length(matches) / length(x)
+    },
+    numeric(1L)
+  )
+  sum(match_amount)
+}
+
+
+count_booster_cards <- Vectorize(count_booster_cards, 'booster_')
+
+
+create_sets_table <- function(all_sets_, sets_column_defs_) {
+  sets_table <- munge_json_list(all_sets_, sets_column_defs_)
+  setDT(sets_table)
+  setnames(sets_table, 'code', 'setCode')
+  sets_table[is.na(onlineOnly), onlineOnly := FALSE]
+  sets_table[, ':='(
+    border            = factor(border, c('black', 'white', 'silver')),
+    type              = factor(type, c(
+      'core', 'expansion', 'reprint', 'box', 'un', 'from the vault',
+      'premium deck', 'duel deck', 'starter', 'commander', 'planechase',
+      'archenemy', 'promo', 'vanguard', 'masters', 'conspiracy', 'masterpiece'
+    )),
+    booster_commons   = count_booster_cards(booster, 'common'),
+    booster_uncommons = count_booster_cards(booster, 'uncommon'),
+    booster_rares     = count_booster_cards(booster, 'rare'),
+    booster_lands     = count_booster_cards(booster, 'land')
+  )]
+  sets_table[, booster_size := ifelse(
+    vapply(booster, identical, logical(1L), NA_character_), 0L, lengths(booster)
+  )]
+  sets_table
+}
+
+
 create_all_tables <- function(all_sets_json) {
   all_sets <- fromJSON(all_sets_json, simplifyVector = FALSE)
   cards <- create_card_table(all_sets)
+  sets  <- create_sets_table(all_sets)
 }
