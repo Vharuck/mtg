@@ -131,8 +131,7 @@ create_card_table <- function(all_sets_, column_defs_) {
     all_sets_,
     function(set_data) munge_json_list(set_data[['cards']], column_defs_)
   )
-  card_table <- rbindlist(set_cards, idcol = 'setCode')
-  setnames(card_table, c('setCode', column_defs_[['field']]))
+  rbindlist(set_cards, idcol = 'setCode')
 }
 
 
