@@ -44,7 +44,11 @@ columnize_json <- function(json_list, column_defs_) {
 
 # Process JSON data according to specified type --------------------------------
 class_processors <- list(
-  integer   = as.integer,
+  integer   = function(z) {
+    z <- trimws(z)
+    z[grep('^X+$', z)] <- '0'
+    as.integer(z)
+  },
   character = as.character,
   logical   = function(z) as.logical(toupper(z)),
   Date      = as.Date
