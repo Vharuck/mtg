@@ -125,7 +125,7 @@ create_card_table <- function(all_sets_) {
       'reserved',      'logical',   'FALSE',
       'releaseDate',   'Date',      'FALSE',
       'starter',       'logical',   'FALSE',
-      'mciNumber',     'integer',   'FALSE'
+      'mciNumber',     'character', 'FALSE'
     )
   )
   set_cards <- lapply(
