@@ -51,7 +51,14 @@ class_processors <- list(
   },
   character = as.character,
   logical   = function(z) as.logical(toupper(z)),
-  Date      = as.Date
+  Date      = function(z) {
+    z <- trimws(z)
+    only_to_year  <- which(nchar(z) == 4L)
+    z[only_to_year]  <- paste0(z[only_to_year],  '-01-01')
+    only_to_month <- which(nchar(z) == 7L)
+    z[only_to_month] <- paste0(z[only_to_month], '-01')
+    as.Date(z)
+  }
 )
 
 
