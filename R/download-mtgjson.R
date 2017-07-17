@@ -195,6 +195,6 @@ create_sets_table <- function(all_sets_, sets_column_defs_) {
 
 create_all_tables <- function(all_sets_json) {
   all_sets <- fromJSON(all_sets_json, simplifyVector = FALSE)
-  cards <- create_card_table(all_sets)
+  cards <- create_cards_table(all_sets)
   sets  <- create_sets_table(all_sets)
 }
