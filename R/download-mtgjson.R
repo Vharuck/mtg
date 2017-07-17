@@ -13,6 +13,35 @@ download_mtg_data <- function(save_dir) {
 }
 
 
+get_with_default <- function(object, name) {
+  if (name %in% names(object)) {
+    object[[name]]
+  } else {
+    NA
+  }
+}
+
+
+columnize_json <- function(json_list, column_defs_) {
+   columns <- mapply(
+     column_defs_[, 'field'],
+     column_defs_[, 'is_vector'],
+     FUN = function(field, is_vector) {
+       values <- lapply(json_list, get_with_default, name = field)
+       if (is_vector == 'TRUE') {
+         values
+       } else {
+         unlist(values)
+       }
+     },
+     SIMPLIFY = FALSE
+   )
+   setDT(columns)
+   setnames(columns, column_defs_[, 'field'])
+   columns
+}
+
+
 # Process JSON data according to specified type --------------------------------
 class_processors <- list(
   integer   = as.integer,
@@ -23,12 +52,9 @@ class_processors <- list(
 
 
 process_field <- function(x, class_, is_vector) {
-  if (is.null(x)) {
-    x <- NA
-  }
   class_fun <- class_processors[[class_]]
   processor_fun <- if (is_vector == 'TRUE') {
-    function(y) list(lapply(y, class_fun))
+    function(y) lapply(y, class_fun)
   } else {
     class_fun
   }
@@ -39,9 +65,10 @@ process_field <- function(x, class_, is_vector) {
 #' Converts a basic list returned by fromJSON to have all required fields, each
 #' of the correct class
 munge_json_list <- function(json_list, column_defs_) {
+  columns <- columnize_json(json_list, column_defs_)
   mapply(
     process_field,
-    x         = json_list[column_defs_[, 'field']],
+    x         = columns,
     class_    = column_defs_[, 'class'],
     is_vector = column_defs_[, 'is_vector'],
     SIMPLIFY  = FALSE
@@ -50,12 +77,6 @@ munge_json_list <- function(json_list, column_defs_) {
 
 
 # Create the tables ------------------------------------------------------------
-card_list_to_table <- function(card_list, column_defs_) {
- filled_list <- lapply(card_list, munge_json_list, column_defs_ = column_defs_)
- rbindlist(filled_list)
-}
-
-
 create_card_table <- function(all_sets_) {
   column_defs <- matrix(
     ncol = 3L,
@@ -98,7 +119,7 @@ create_card_table <- function(all_sets_) {
   )
   set_cards <- lapply(
     all_sets_,
-    function(set_data) card_list_to_table(set_data[['cards']], column_defs)
+    function(set_data) munge_json_list(set_data[['cards']], column_defs)
   )
   card_table <- rbindlist(set_cards, idcol = 'setCode')
   setnames(card_table, c('setCode', column_defs[, 'field']))
