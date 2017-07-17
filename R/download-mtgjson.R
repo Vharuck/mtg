@@ -24,11 +24,11 @@ get_with_default <- function(object, name) {
 
 columnize_json <- function(json_list, column_defs_) {
    columns <- mapply(
-     column_defs_[, 'field'],
-     column_defs_[, 'is_vector'],
+     column_defs_[['field']],
+     column_defs_[['is_vector']],
      FUN = function(field, is_vector) {
        values <- lapply(json_list, get_with_default, name = field)
-       if (is_vector == 'TRUE') {
+       if (is_vector) {
          values
        } else {
          unlist(values)
@@ -37,7 +37,7 @@ columnize_json <- function(json_list, column_defs_) {
      SIMPLIFY = FALSE
    )
    setDT(columns)
-   setnames(columns, column_defs_[, 'field'])
+   setnames(columns, column_defs_[['field']])
    columns
 }
 
@@ -64,7 +64,7 @@ class_processors <- list(
 
 process_field <- function(x, class_, is_vector) {
   class_fun <- class_processors[[class_]]
-  processor_fun <- if (is_vector == 'TRUE') {
+  processor_fun <- if (is_vector) {
     function(y) lapply(y, class_fun)
   } else {
     class_fun
@@ -80,60 +80,59 @@ munge_json_list <- function(json_list, column_defs_) {
   mapply(
     process_field,
     x         = columns,
-    class_    = column_defs_[, 'class'],
-    is_vector = column_defs_[, 'is_vector'],
+    class_    = column_defs_[['class_']],
+    is_vector = column_defs_[['is_vector']],
     SIMPLIFY  = FALSE
   )
 }
 
 
 # Create the tables ------------------------------------------------------------
-create_card_table <- function(all_sets_) {
-  column_defs <- matrix(
-    ncol = 3L,
-    dimnames = list(NULL, c('field', 'class', 'is_vector')),
-    byrow = TRUE,
-    c(
-      'id',            'character', 'FALSE',
-      'layout',        'character', 'FALSE',
-      'name',          'character', 'FALSE',
-      'names',         'character', 'TRUE',
-      'manaCost',      'character', 'FALSE',
-      'cmc',           'integer',   'FALSE',
-      'colors',        'character', 'TRUE',
-      'colorIdentity', 'character', 'TRUE',
-      'type',          'character', 'TRUE',
-      'supertypes',    'character', 'TRUE',
-      'types',         'character', 'TRUE',
-      'subtypes',      'character', 'TRUE',
-      'rarity',        'character', 'FALSE',
-      'text',          'character', 'FALSE',
-      'flavor',        'character', 'FALSE',
-      'artist',        'character', 'FALSE',
-      'number',        'character', 'FALSE',
-      'power',         'character', 'FALSE',
-      'toughness',     'character', 'FALSE',
-      'loyalty',       'integer',   'FALSE',
-      'multiverseid',  'integer',   'FALSE',
-      'variations',    'integer',   'TRUE',
-      'imageName',     'character', 'FALSE',
-      'watermark',     'character', 'FALSE',
-      'border',        'character', 'FALSE',
-      'timeshifted',   'logical',   'FALSE',
-      'hand',          'integer',   'FALSE',
-      'life',          'integer',   'FALSE',
-      'reserved',      'logical',   'FALSE',
-      'releaseDate',   'Date',      'FALSE',
-      'starter',       'logical',   'FALSE',
-      'mciNumber',     'character', 'FALSE'
-    )
-  )
+column_defs <- fread(
+  '
+  table, field,        class_,    is_vector
+  cards, id,            character, FALSE
+  cards, layout,        character, FALSE
+  cards, name,          character, FALSE
+  cards, names,         character, TRUE
+  cards, manaCost,      character, FALSE
+  cards, cmc,           integer,   FALSE
+  cards, colors,        character, TRUE
+  cards, colorIdentity, character, TRUE
+  cards, type,          character, TRUE
+  cards, supertypes,    character, TRUE
+  cards, types,         character, TRUE
+  cards, subtypes,      character, TRUE
+  cards, rarity,        character, FALSE
+  cards, text,          character, FALSE
+  cards, flavor,        character, FALSE
+  cards, artist,        character, FALSE
+  cards, number,        character, FALSE
+  cards, power,         character, FALSE
+  cards, toughness,     character, FALSE
+  cards, loyalty,       integer,   FALSE
+  cards, multiverseid,  integer,   FALSE
+  cards, variations,    integer,   TRUE
+  cards, imageName,     character, FALSE
+  cards, watermark,     character, FALSE
+  cards, border,        character, FALSE
+  cards, timeshifted,   logical,   FALSE
+  cards, hand,          integer,   FALSE
+  cards, life,          integer,   FALSE
+  cards, reserved,      logical,   FALSE
+  cards, releaseDate,   Date,      FALSE
+  cards, starter,       logical,   FALSE
+  cards, mciNumber,     character, FALSE
+  '
+)
+
+create_card_table <- function(all_sets_, column_defs_) {
   set_cards <- lapply(
     all_sets_,
-    function(set_data) munge_json_list(set_data[['cards']], column_defs)
+    function(set_data) munge_json_list(set_data[['cards']], column_defs_)
   )
   card_table <- rbindlist(set_cards, idcol = 'setCode')
-  setnames(card_table, c('setCode', column_defs[, 'field']))
+  setnames(card_table, c('setCode', column_defs_[['field']]))
 }
 
 
