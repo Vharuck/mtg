@@ -129,7 +129,7 @@ column_defs <- fread(
 create_cards_table <- function(all_sets_, cards_column_defs_) {
   set_cards <- lapply(
     all_sets_,
-    function(set_data) munge_json_list(set_data[['cards']], column_defs_)
+    function(set_data) munge_json_list(set_data[['cards']], cards_column_defs_)
   )
   rbindlist(set_cards, idcol = 'setCode')
 }
