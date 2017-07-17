@@ -126,7 +126,7 @@ column_defs <- fread(
   '
 )
 
-create_card_table <- function(all_sets_, column_defs_) {
+create_cards_table <- function(all_sets_, cards_column_defs_) {
   set_cards <- lapply(
     all_sets_,
     function(set_data) munge_json_list(set_data[['cards']], column_defs_)
