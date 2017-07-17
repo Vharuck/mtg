@@ -65,7 +65,15 @@ class_processors <- list(
 process_field <- function(x, class_, is_vector) {
   class_fun <- class_processors[[class_]]
   processor_fun <- if (is_vector) {
-    function(y) lapply(y, class_fun)
+    function(y) {
+      is_sublist <- lapply(y, function(z) lengths(z) > 1L)
+      is_nested <- any(unlist(is_sublist))
+      if (is_nested) {
+        rapply(y, class_fun, how = 'replace')
+      } else {
+        lapply(y, class_fun)
+      }
+    }
   } else {
     class_fun
   }
