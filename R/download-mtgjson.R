@@ -31,6 +31,8 @@ columnize_json <- function(json_list, column_defs_) {
        if (is_vector) {
          values
        } else {
+         is_null_value <- vapply(values, is.null, logical(1L))
+         values[is_null_value] <- NA
          unlist(values)
        }
      },
