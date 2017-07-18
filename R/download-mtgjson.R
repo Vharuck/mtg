@@ -164,16 +164,19 @@ create_cards_table <- function(all_sets_, cards_column_defs_) {
     function(set_data) munge_json_list(set_data[['cards']], cards_column_defs_)
   )
   cards_table <- rbindlist(set_cards, idcol = 'setCode')
-  for (column in c('colorIdentity', 'type', 'supertypes', 'subtypes')) {
-    expanded <- expand_to_factors(cards[[column]])
-    set(cards, j = names(expanded), value = expanded)
+  for (column in c('colorIdentity', 'types', 'supertypes', 'subtypes')) {
+    expanded <- expand_to_factors(cards_table[[column]])
+    if (truelength(cards_table) < length(expanded)) {
+      alloc.col(cards_table, 2 * length(expanded))
+    }
+    set(cards_table, j = names(expanded), value = expanded)
   }
   setnames(
-    cards,
+    cards_table,
     c('is_b',     'is_g',     'is_r',   'is_u',    'is_w'),
     c('is_black', 'is_green', 'is_red', 'is_blue', 'is_white')
   )
-  cards
+  cards_table
 }
 
 
