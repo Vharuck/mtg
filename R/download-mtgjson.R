@@ -142,6 +142,9 @@ column_defs <- fread(
   '
 )
 
+# Cards table ------------------------------------------------------------------
+
+
 create_cards_table <- function(all_sets_, cards_column_defs_) {
   set_cards <- lapply(
     all_sets_,
@@ -149,6 +152,9 @@ create_cards_table <- function(all_sets_, cards_column_defs_) {
   )
   rbindlist(set_cards, idcol = 'setCode')
 }
+
+
+# Sets table ------------------------------------------------------------------
 
 
 count_booster_cards <- function(booster_, rarity) {
