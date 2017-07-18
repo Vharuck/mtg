@@ -107,7 +107,7 @@ column_defs <- fread(
   cards, cmc,           integer,   FALSE
   cards, colors,        character, TRUE
   cards, colorIdentity, character, TRUE
-  cards, type,          character, TRUE
+  cards, type,          character, FALSE
   cards, supertypes,    character, TRUE
   cards, types,         character, TRUE
   cards, subtypes,      character, TRUE
