@@ -145,12 +145,35 @@ column_defs <- fread(
 # Cards table ------------------------------------------------------------------
 
 
+expand_to_factors <- function(x) {
+  all_levels <- unique(unlist(x))
+  all_levels <- all_levels[!is.na(all_levels)]
+  is_element_vectorized <- Vectorize(is.element, 'set')
+  dummies <- lapply(all_levels, function(level) is_element_vectorized(level, x))
+  setDT(dummies)
+  column_names <- gsub('[^[:alpha:]]+', '_', tolower(all_levels))
+  column_names <- paste0('is_', column_names)
+  setnames(dummies, column_names)
+  dummies
+}
+
+
 create_cards_table <- function(all_sets_, cards_column_defs_) {
   set_cards <- lapply(
     all_sets_,
     function(set_data) munge_json_list(set_data[['cards']], cards_column_defs_)
   )
-  rbindlist(set_cards, idcol = 'setCode')
+  cards_table <- rbindlist(set_cards, idcol = 'setCode')
+  for (column in c('colorIdentity', 'type', 'supertypes', 'subtypes')) {
+    expanded <- expand_to_factors(cards[[column]])
+    set(cards, j = names(expanded), value = expanded)
+  }
+  setnames(
+    cards,
+    c('is_b',     'is_g',     'is_r',   'is_u',    'is_w'),
+    c('is_black', 'is_green', 'is_red', 'is_blue', 'is_white')
+  )
+  cards
 }
 
 
