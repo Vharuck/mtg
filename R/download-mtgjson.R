@@ -225,8 +225,9 @@ create_sets_table <- function(all_sets_, sets_column_defs_) {
 }
 
 
-create_all_tables <- function(all_sets_json) {
-  all_sets <- fromJSON(all_sets_json, simplifyVector = FALSE)
-  cards <- create_cards_table(all_sets)
-  sets  <- create_sets_table(all_sets)
-}
+all_sets_json <- download_mtg_data('data/download')
+all_sets      <- fromJSON(all_sets_json, simplifyVector = FALSE)
+cards         <- create_cards_table(all_sets, column_defs[table == 'cards'])
+sets          <- create_sets_table(all_sets,  column_defs[table == 'sets'])
+save(cards, file = 'data/cards')
+save(sets,  file = 'data/sets')
