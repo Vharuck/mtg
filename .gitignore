@@ -37,3 +37,6 @@ vignettes/*.pdf
 *.sqlite
 *.zip
 data/download/
+
+# Specific files
+artists.html

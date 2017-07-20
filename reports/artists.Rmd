@@ -1,0 +1,44 @@
+---
+title: 'Artists of Magic: the Gathering'
+author: "Nathan Werth"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+Do the artists of Magic: The Gathering have preferences? Mana color, creature
+types, or anything of that sort?
+
+## Exploration
+
+```{r loadData}
+library(data.table)
+library(ggplot2)
+
+load('../data/cards.RData')
+load('../data/sets.RData')
+
+cards <- cards[sets, on = 'setCode']
+```
+
+How many artists have their been over the years?
+
+```{r count}
+length(unique(cards$artist))
+```
+
+That's a lot. Who's in the top as far as number of cards?
+
+```{r topCount}
+artist_works <- table(cards$artist)
+head(sort(artist_works, decreasing = TRUE))
+```
+
+Let's see which artists got the most work, and when their cards were released.
+
+```{r timeline}
+timeline <- cards[
+  ,
+  list(count = .N),
+  keyby = c('artist', 'setCode')
+]
+```
