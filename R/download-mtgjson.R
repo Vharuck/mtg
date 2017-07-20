@@ -171,20 +171,16 @@ create_cards_table <- function(all_sets_, cards_column_defs_) {
     function(set_data) munge_json_list(set_data[['cards']], cards_column_defs_)
   )
   cards_table <- rbindlist(set_cards, idcol = 'setCode')
-
   type_dummies      <- expand_to_dummies(cards_table$types,         'type')
   supertype_dummies <- expand_to_dummies(cards_table$supertypes,    'supertype')
   subtype_dummies   <- expand_to_dummies(cards_table$subtypes,      'subtype')
-  color_dummies     <- expand_to_dummies(cards_table$colorIdentity, 'color')
+  color_dummies     <- expand_to_dummies(cards_table$colors,        'color')
+  identity_dummies  <- expand_to_dummies(cards_table$colorIdentity, 'identity')
   set(cards_table, j = names(type_dummies),      value = type_dummies)
   set(cards_table, j = names(supertype_dummies), value = supertype_dummies)
   set(cards_table, j = names(subtype_dummies),   value = subtype_dummies)
   set(cards_table, j = names(color_dummies),     value = color_dummies)
-  setnames(
-    cards_table,
-    c('is_color_b',     'is_color_g',     'is_color_r',   'is_color_u',    'is_color_w'),
-    c('is_color_black', 'is_color_green', 'is_color_red', 'is_color_blue', 'is_color_white')
-  )
+  set(cards_table, j = names(identity_dummies),  value = identity_dummies)
   cards_table
 }
 
