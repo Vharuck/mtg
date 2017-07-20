@@ -14,15 +14,16 @@ from the web).
 
 Data on set releases.
 
-For most columns, descriptions of the content can be found at http://mtgjson.com/documentation.html. Those have been copied below.
+For most columns, descriptions of the content can be found at
+http://mtgjson.com/documentation.html. Those have been copied below.
 
-|Column              |Class       |Summary                                       |
-|:-------------------|:-----------|:---------------------------------------------|
-|`name`              |`character` | Name of the set
+|Column              |Class       |Summary                                     |
+|:-------------------|:-----------|:-------------------------------------------|
+|`setName`           |`character` | Name of the set
 |`setCode`           |`character` | Abbreviated code (key for matching with `cards`)
 |`releaseDate`       |`Date`      | Release date
 |`border`            |`factor`    | Card border color: `"white"`, `"black"`, or `"silver"`
-|`type`              |`factor`    | Type of the set
+|`setType`           |`factor`    | Type of the set
 |`block`             |`character` | Name of the set block
 |`onlineOnly`        |`logical`   | Was set only released online?
 |`booster`           |`list`      | List of `character` vectors with card rarities in each booster pack
@@ -48,8 +49,8 @@ If a value contains mana symbols (for example, `manaCost` or an ability cost in
 -   `{C}`: colorless mana (must be colorless, like with some Eldrazi cards)
 -   `{N}`: *N* mana of any color (can also be `X`, which is a variable amount)
 
-|Column          |Class       |Summary |
-|:---------------|:-----------|:-------|
+|Column          |Class       |Summary                                         |
+|:---------------|:-----------|:-----------------------------------------------|
 |`setCode`       |`character` | See descripion for `sets.RData`
 |`id`            |`character` | Unique hash ID for card
 |`layout`        |`character` | Layout of the card (important for split cards and such); see below
