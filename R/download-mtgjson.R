@@ -221,7 +221,11 @@ count_booster_cards <- Vectorize(count_booster_cards, 'booster_')
 create_sets_table <- function(all_sets_, sets_column_defs_) {
   sets_table <- munge_json_list(all_sets_, sets_column_defs_)
   setDT(sets_table)
-  setnames(sets_table, 'code', 'setCode')
+  setnames(
+    sets_table,
+    c('code',    'name',    'type'),
+    c('setCode', 'setName', 'setType')
+  )
   sets_table[is.na(onlineOnly), onlineOnly := FALSE]
   sets_table[, ':='(
     border            = factor(border, c('black', 'white', 'silver')),
