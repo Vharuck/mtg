@@ -181,6 +181,18 @@ create_cards_table <- function(all_sets_, cards_column_defs_) {
   set(cards_table, j = names(subtype_dummies),   value = subtype_dummies)
   set(cards_table, j = names(color_dummies),     value = color_dummies)
   set(cards_table, j = names(identity_dummies),  value = identity_dummies)
+  cards_table[, ':='(
+    rarity = factor(
+      tolower(rarity),
+      c('basic land', 'common', 'uncommon', 'rare', 'mythic rare', 'special'),
+      ordered = TRUE
+    ),
+    layout = factor(
+      layout,
+      c("normal", "split", "token", "flip", "double-faced", "leveler",
+        "phenomenon", "plane", "scheme", "vanguard", "aftermath")
+    )
+  )]
   cards_table
 }
 
