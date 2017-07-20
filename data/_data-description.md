@@ -14,7 +14,8 @@ from the web).
 
 Data on set releases.
 
-For most columns, descriptions of the content can be found at http://mtgjson.com/documentation.html. Those have been copied below.
+For most columns, descriptions of the content can be found at
+http://mtgjson.com/documentation.html. Those have been copied below.
 
 |Column              |Class       |Summary                                     |
 |:-------------------|:-----------|:-------------------------------------------|
