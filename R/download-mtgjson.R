@@ -1,4 +1,4 @@
-# Download card data and make data.tables --------------------------------------
+# Download card data and make data.tables
 # All data is taken from mtgjson.com
 library(data.table)
 library(jsonlite)
@@ -13,6 +13,8 @@ download_mtg_data <- function(save_dir) {
 }
 
 
+
+# Rearrange lists of objects to lists of attributes ----------------------------
 get_with_default <- function(object, name) {
   if (name %in% names(object)) {
     object[[name]]
@@ -145,8 +147,6 @@ column_defs <- fread(
 )
 
 # Cards table ------------------------------------------------------------------
-
-
 expand_to_dummies <- function(x, prefix = NULL) {
   all_levels <- unique(unlist(x))
   all_levels <- all_levels[!is.na(all_levels)]
@@ -198,8 +198,6 @@ create_cards_table <- function(all_sets_, cards_column_defs_) {
 
 
 # Sets table ------------------------------------------------------------------
-
-
 count_booster_cards <- function(booster_, rarity) {
   # 1 for every "guarantee", fraction for a choice. Might want to adjust to
   # reflect actual probability, e.g. for mythic rare vs rare
@@ -246,6 +244,7 @@ create_sets_table <- function(all_sets_, sets_column_defs_) {
 }
 
 
+# Putting it into action -------------------------------------------------------
 all_sets_json <- download_mtg_data('data/download')
 all_sets      <- fromJSON(all_sets_json, simplifyVector = FALSE)
 cards         <- create_cards_table(all_sets, column_defs[table == 'cards'])
