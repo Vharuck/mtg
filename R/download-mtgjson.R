@@ -250,5 +250,17 @@ all_sets_json <- download_mtg_data('data/download')
 all_sets      <- fromJSON(all_sets_json, simplifyVector = FALSE)
 cards         <- create_cards_table(all_sets, column_defs[table == 'cards'])
 sets          <- create_sets_table(all_sets,  column_defs[table == 'sets'])
+
+# A card's release date is only given when it's different from the set's
+cards[
+  sets[, list(setCode, setRelease = releaseDate)],
+  releaseDate := ifelse(
+    is.na(releaseDate),
+    setRelease,
+    releaseDate
+  ),
+  on = 'setCode'
+]
+
 save(cards, file = 'data/cards.RData')
 save(sets,  file = 'data/sets.RData')
