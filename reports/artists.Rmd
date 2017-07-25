@@ -14,6 +14,8 @@ types, or anything of that sort?
 library(data.table)
 library(ggplot2)
 
+theme_set(theme_minimal())
+
 load('../data/cards.RData')
 load('../data/sets.RData')
 
