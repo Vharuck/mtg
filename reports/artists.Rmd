@@ -32,7 +32,8 @@ That's a lot. Who's in the top as far as number of cards?
 
 ```{r topCount}
 artist_works <- table(cards$artist)
-head(sort(artist_works, decreasing = TRUE))
+sorted_works <- sort(artist_works, decreasing = TRUE)
+head(sorted_works)
 ```
 
 I actually remember some of those names. Dan Frazier is from the older sets, and
@@ -40,8 +41,20 @@ Mark Tedin sounds familiar. I started playing when Ice Age was the new thing.
 Let's see when these artists were pumping out cards.
 
 ```{r timeline}
-timeline <- cards[
-  ,
+prolific_artists <- head(names(sorted_works))
+
+ggplot(
+  cards[artist %in% prolific_artists],
+  aes(x = releaseDate)
+  ) +
+  geom_histogram(bins = 50) +
+  facet_wrap(~ artist, ncol = 3)
+```
+
+Frazier was indeed a *very* common artist in the old days, and Mark Tedin also
+did a lot back then. `r prolific_artists[[1]]` did the most card art, and he did
+this by keeping a steadier rate of work than most of the other prolific artists.
+
   list(count = .N),
   keyby = c('artist', 'setCode')
 ]
