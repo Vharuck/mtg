@@ -35,7 +35,9 @@ artist_works <- table(cards$artist)
 head(sort(artist_works, decreasing = TRUE))
 ```
 
-Let's see which artists got the most work, and when their cards were released.
+I actually remember some of those names. Dan Frazier is from the older sets, and
+Mark Tedin sounds familiar. I started playing when Ice Age was the new thing.
+Let's see when these artists were pumping out cards.
 
 ```{r timeline}
 timeline <- cards[
