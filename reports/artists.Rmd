@@ -55,7 +55,56 @@ Frazier was indeed a *very* common artist in the old days, and Mark Tedin also
 did a lot back then. `r prolific_artists[[1]]` did the most card art, and he did
 this by keeping a steadier rate of work than most of the other prolific artists.
 
+## Color preference
+
+Now for what really started this investigation: does any artist prefer (or get
+assigned) certain colors more than others?
+
+```{r colorStars}
+color_dummies <- grep('^is_color_', names(cards), value = TRUE)
+card_colors <- melt(
+  cards,
+  id.vars       = c('artist', 'name'),
+  measure.vars  = color_dummies,
+  variable.name = 'color',
+  value.name    = 'is_color'
+)
+card_colors[, color := gsub('^is_color_', '', color)]
+card_colors[, color := factor(color, c('black', 'blue', 'white', 'green', 'red'))]
+artist_colors <- card_colors[
+  is_color == TRUE,
   list(count = .N),
-  keyby = c('artist', 'setCode')
+  by = c('artist', 'color')
+][
+  ,
+  list(
+    color        = color,
+    count        = count,
+    count_scaled = count / sum(count)
+  ),
+  by = 'artist'
 ]
+
+magic_colors <- c(
+      blue  = 'blue',
+      white = 'khaki2',
+      red   = 'darkred',
+      black = 'black',
+      green = 'forestgreen'
+    )
+
+ggplot(
+  artist_colors[artist %in% prolific_artists],
+  aes(x = color, y = count_scaled, fill = color)
+  ) +
+  geom_col() +
+  facet_wrap(~ artist, ncol = 3) +
+  coord_polar() +
+  scale_fill_manual(values = magic_colors) +
+  guides(fill = FALSE) +
+  labs(
+    title = "Color proportions of artist's works",
+    x     = NULL,
+    y     = NULL
+  )
 ```
